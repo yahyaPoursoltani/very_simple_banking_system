@@ -74,7 +74,7 @@ coverage.xml
 dmypy.json
 .pyre/
 .ruff_cache/
-
+core_banking/core_banking/settings.py
 # Jupyter Notebook
 .ipynb_checkpoints/
 
