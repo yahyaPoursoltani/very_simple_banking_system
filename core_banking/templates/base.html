@@ -49,7 +49,7 @@
 <body>
 
 <div class="container py-3">
-    <nav class="navbar navbar-expand-lg mb-4">
+    <nav class="navbar navbar-expand-lg navbar-light mb-4">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">سامانه بانکی</a>
 
@@ -121,13 +121,21 @@
 
                         {% if request.session.role == 'admin' %}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="adminMenuDropdown" role="button"
+                            <a class="nav-link dropdown-toggle" href="#" id="userManagementDropdown" role="button"
                                data-bs-toggle="dropdown" aria-expanded="false">
-                                مدیریت سیستم
+                                مدیریت کاربران بانکی
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminMenuDropdown">
-                                <li><a class="dropdown-item" href="/admin-panel/users/">مدیریت کاربران</a></li>
-                                <li><a class="dropdown-item" href="/admin-panel/users/create/">افزودن کاربر</a></li>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userManagementDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'organization:bank_user_create' %}">
+                                        تعریف کاربر بانکی جدید
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'organization:bank_user_list' %}">
+                                        لیست کاربران بانکی
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                         {% endif %}
@@ -164,9 +172,9 @@
                 const submenu = this.nextElementSibling;
                 const parentMenu = this.closest(".dropdown-menu");
 
-                if (!submenu) return;
+                if (!submenu || !parentMenu) return;
 
-                parentMenu.querySelectorAll(".dropdown-menu").forEach(function (menu) {
+                parentMenu.querySelectorAll(":scope > .dropdown-submenu > .dropdown-menu").forEach(function (menu) {
                     if (menu !== submenu) {
                         menu.classList.remove("show");
                     }

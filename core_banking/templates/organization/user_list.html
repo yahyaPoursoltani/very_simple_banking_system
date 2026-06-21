@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>لیست کاربران بانکی</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="mb-3">
+        <a href="{% url 'organization:bank_user_create' %}" class="btn btn-primary">
+            کاربر جدید
+        </a>
+    </div>
+
+    <form method="get" class="row g-2 mb-3">
+        <div class="col-md-4">
+            <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="جستجو بر اساس نام کاربری، نام، کد ملی">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-secondary">جستجو</button>
+        </div>
+    </form>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>شناسه</th>
+                <th>نام کاربری</th>
+                <th>نام کامل</th>
+                <th>کد ملی</th>
+                <th>وضعیت</th>
+                <th>عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.user_id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.full_name }}</td>
+                <td>{{ user.national_id }}</td>
+                <td>
+                    {% if user.is_active %}
+                        فعال
+                    {% else %}
+                        غیرفعال
+                    {% endif %}
+                </td>
+                <td>
+                    {% if user.user_id %}
+                        <a href="{% url 'organization:bank_user_edit' user.user_id %}" class="btn btn-sm btn-warning">
+                            ویرایش
+                        </a>
+                    {% else %}
+                        <span class="text-danger">شناسه نامعتبر</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">هیچ کاربری یافت نشد.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
