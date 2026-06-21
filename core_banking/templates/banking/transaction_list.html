@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}لیست تراکنش‌ها{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>لیست تراکنش‌ها</h4>
+        <div>
+            <a href="{% url 'deposit_create' %}" class="btn btn-success">واریز</a>
+            <a href="{% url 'withdraw_create' %}" class="btn btn-warning">برداشت</a>
+            <a href="{% url 'transfer_create' %}" class="btn btn-primary">انتقال وجه</a>
+        </div>
+    </div>
+
+    <form method="get" class="row g-2 mb-3">
+        <div class="col-md-10">
+            <input type="text" name="search" class="form-control"
+                   placeholder="جستجو بر اساس شماره حساب، نام مشتری، کد ملی، توضیحات"
+                   value="{{ search }}">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-dark w-100">جستجو</button>
+        </div>
+    </form>
+
+    <div class="card">
+        <div class="card-body table-responsive">
+            <table class="table table-bordered table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>شناسه</th>
+                        <th>شماره حساب</th>
+                        <th>نام مشتری</th>
+                        <th>کد ملی</th>
+                        <th>مبلغ</th>
+                        <th>نوع تراکنش</th>
+                        <th>توضیحات</th>
+                        <th>وضعیت</th>
+                        <th>تاریخ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tx in transactions %}
+                    <tr>
+                        <td>{{ tx.transaction_id }}</td>
+                        <td>{{ tx.account_number }}</td>
+                        <td>{{ tx.customer_name }}</td>
+                        <td>{{ tx.national_id }}</td>
+                        <td>{{ tx.amount }}</td>
+                        <td>{{ tx.fk_transaction_transactiontype }}</td>
+                        <td>{{ tx.description }}</td>
+                        <td>
+                            {% if tx.status == 1 %}
+                                <span class="badge bg-success">موفق</span>
+                            {% elif tx.status == 0 %}
+                                <span class="badge bg-secondary">ناموفق</span>
+                            {% else %}
+                                {{ tx.status }}
+                            {% endif %}
+                        </td>
+                        <td>{{ tx.transaction_date }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center">هیچ تراکنشی یافت نشد.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

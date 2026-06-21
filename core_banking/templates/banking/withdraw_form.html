@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}برداشت وجه{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h4 class="mb-0">برداشت وجه</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">حساب مبدا</label>
+                    <select name="account_number" class="form-select" required>
+                        <option value="">انتخاب حساب</option>
+                        {% for account in accounts %}
+                        <option value="{{ account.account_number }}"
+                            {% if form_data.account_number == account.account_number %}selected{% endif %}>
+                            {{ account.account_number }} - {{ account.customer_name }} - موجودی: {{ account.balance }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">مبلغ</label>
+                    <input type="number" name="amount" class="form-control"
+                           value="{{ form_data.amount|default:'' }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">توضیحات</label>
+                    <textarea name="description" class="form-control" rows="3">{{ form_data.description|default:'' }}</textarea>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'transaction_list' %}" class="btn btn-secondary">بازگشت</a>
+                    <button type="submit" class="btn btn-warning">ثبت برداشت</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

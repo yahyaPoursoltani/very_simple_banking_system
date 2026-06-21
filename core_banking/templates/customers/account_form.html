@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}افتتاح حساب{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h4 class="mb-0">افتتاح حساب جدید</h4>
+        </div>
+
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">شماره حساب</label>
+                        <input
+                            type="text"
+                            name="account_number"
+                            class="form-control"
+                            value="{{ form_data.account_number|default:'' }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">موجودی اولیه</label>
+                        <input
+                            type="number"
+                            name="balance"
+                            class="form-control"
+                            value="{{ form_data.balance|default:'' }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">وضعیت حساب</label>
+                        <select name="status" class="form-select" required>
+                            <option value="">انتخاب کنید</option>
+                            <option value="0" {% if form_data.status == '0' %}selected{% endif %}>غیرفعال</option>
+                            <option value="1" {% if form_data.status == '1' %}selected{% endif %}>فعال</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">مشتری</label>
+                        <select name="customer_id" class="form-select" required>
+                            <option value="">انتخاب مشتری</option>
+                            {% for customer in customers %}
+                                <option value="{{ customer.customer_id }}"
+                                    {% if form_data.customer_id == customer.customer_id|stringformat:"s" %}selected{% endif %}>
+                                    {{ customer.full_name }} - {{ customer.national_id }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">نوع حساب</label>
+                        <select name="fk_account_accounttype" class="form-select" required>
+                            <option value="">انتخاب نوع حساب</option>
+                            {% for account_type in account_types %}
+                                <option value="{{ account_type.account_type_id }}"
+                                    {% if form_data.fk_account_accounttype == account_type.account_type_id|stringformat:"s" %}selected{% endif %}>
+                                    {% if account_type.account_type_name %}
+                                        {{ account_type.account_type_name }}
+                                    {% else %}
+                                        نوع حساب {{ account_type.account_type_id }}
+                                    {% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-3">
+                    <a href="{% url 'account_list' %}" class="btn btn-secondary">بازگشت</a>
+                    <button type="submit" class="btn btn-primary">افتتاح حساب</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

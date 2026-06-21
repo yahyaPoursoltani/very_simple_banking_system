@@ -82,18 +82,20 @@
                                 <li class="dropdown-submenu">
                                     <a class="dropdown-item dropdown-toggle" href="#">خدمات مشتری</a>
                                     <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="/customers/create/">ثبت مشتری</a></li>
-                                        <li><a class="dropdown-item" href="/accounts/create/">افتتاح حساب</a></li>
-                                        <li><a class="dropdown-item" href="/customers/list/">لیست مشتریان</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'customer_create' %}">ثبت مشتری</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'customer_list' %}">لیست مشتریان</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'account_create' %}">افتتاح حساب</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'account_list' %}">لیست حساب‌ها</a></li>
                                     </ul>
                                 </li>
 
                                 <li class="dropdown-submenu">
                                     <a class="dropdown-item dropdown-toggle" href="#">عملیات مالی</a>
                                     <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="/transactions/deposit/">واریز وجه</a></li>
-                                        <li><a class="dropdown-item" href="/transactions/withdraw/">برداشت وجه</a></li>
-                                        <li><a class="dropdown-item" href="/transactions/internal-transfer/">انتقال وجه داخلی</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'transaction_list' %}">لیست تراکنش‌ها</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'deposit_create' %}">واریز وجه</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'withdraw_create' %}">برداشت وجه</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'transfer_create' %}">انتقال وجه</a></li>
                                     </ul>
                                 </li>
 
@@ -158,6 +160,17 @@
         </div>
     </nav>
 
+    {% if messages %}
+        <div class="mb-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="بستن"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     {% block content %}{% endblock %}
 </div>
 
@@ -172,7 +185,9 @@
                 const submenu = this.nextElementSibling;
                 const parentMenu = this.closest(".dropdown-menu");
 
-                if (!submenu || !parentMenu) return;
+                if (!submenu || !parentMenu) {
+                    return;
+                }
 
                 parentMenu.querySelectorAll(":scope > .dropdown-submenu > .dropdown-menu").forEach(function (menu) {
                     if (menu !== submenu) {
