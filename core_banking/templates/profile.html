@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}پروفایل کاربری{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow border-0 rounded-3">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h4 class="mb-0 fw-bold">پروفایل کاربری</h4>
+                </div>
+                <div class="card-body p-4">
+                    <!-- بخش آواتار نمایشی و نام کاربری -->
+                    <div class="text-center mb-4">
+                        <div class="bg-light d-inline-block p-3 rounded-circle mb-2" style="width: 80px; height: 80px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-person text-primary" viewBox="0 0 16 16">
+                              <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
+                            </svg>
+                        </div>
+                        <h4 class="fw-bold text-dark mb-1">{{ profile.username }}</h4>
+                        <span class="badge bg-info text-dark px-3 py-2 rounded-pill fs-6 fw-bold">نقش: {{ profile.role_name }}</span>
+                    </div>
+
+                    <!-- جدول مشخصات کاربر -->
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <tbody>
+                                <tr>
+                                    <th class="text-secondary w-50 py-3" style="border-top: none;">شناسه کاربری (User ID)</th>
+                                    <td class="fw-bold text-end py-3 text-dark" style="border-top: none;">{{ profile.user_id }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-secondary py-3">نام کاربری</th>
+                                    <td class="fw-bold text-end py-3 text-dark">{{ profile.username }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-secondary py-3">سطح دسترسی / نقش</th>
+                                    <td class="fw-bold text-end py-3 text-dark">{{ profile.role_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-secondary py-3">وضعیت حساب کاربری</th>
+                                    <td class="text-end py-3">
+                                        {% if profile.is_active %}
+                                            <span class="badge bg-success px-3 py-2 rounded-pill">فعال</span>
+                                        {% else %}
+                                            <span class="badge bg-danger px-3 py-2 rounded-pill">غیرفعال</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="text-secondary py-3">تاریخ ایجاد حساب</th>
+                                    <td class="fw-bold text-end py-3 text-dark" dir="ltr">{{ profile.created_at|date:"Y-m-d H:i" }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="/" class="btn btn-outline-secondary px-4">بازگشت به صفحه اصلی</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

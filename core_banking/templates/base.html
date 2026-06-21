@@ -1,0 +1,191 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}سامانه بانکی{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .dropdown-submenu {
+            position: relative;
+        }
+
+        .dropdown-submenu > .dropdown-menu {
+            top: 0;
+            right: 100%;
+            margin-top: -1px;
+        }
+
+        .dropdown-submenu > .dropdown-toggle::after {
+            float: left;
+            margin-top: 0.6em;
+            transform: rotate(90deg);
+        }
+
+        @media (max-width: 991.98px) {
+            .dropdown-submenu > .dropdown-menu {
+                right: 0;
+                margin-right: 1rem;
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<div class="container py-3">
+    <nav class="navbar navbar-expand-lg mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">سامانه بانکی</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                    aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">صفحه اصلی</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact/">ارتباط با ما</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav ms-auto">
+                    {% if request.session.user_id %}
+
+                        {% if request.session.role == 'branch_manager' or request.session.role == 'teller' or request.session.role == 'admin' %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="bankServicesDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                خدمات بانکی
+                            </a>
+
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bankServicesDropdown">
+                                <li class="dropdown-submenu">
+                                    <a class="dropdown-item dropdown-toggle" href="#">خدمات مشتری</a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="/customers/create/">ثبت مشتری</a></li>
+                                        <li><a class="dropdown-item" href="/accounts/create/">افتتاح حساب</a></li>
+                                        <li><a class="dropdown-item" href="/customers/list/">لیست مشتریان</a></li>
+                                    </ul>
+                                </li>
+
+                                <li class="dropdown-submenu">
+                                    <a class="dropdown-item dropdown-toggle" href="#">عملیات مالی</a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="/transactions/deposit/">واریز وجه</a></li>
+                                        <li><a class="dropdown-item" href="/transactions/withdraw/">برداشت وجه</a></li>
+                                        <li><a class="dropdown-item" href="/transactions/internal-transfer/">انتقال وجه داخلی</a></li>
+                                    </ul>
+                                </li>
+
+                                <li class="dropdown-submenu">
+                                    <a class="dropdown-item dropdown-toggle" href="#">تسهیلات</a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="/loans/request/">ثبت درخواست وام</a></li>
+                                        <li><a class="dropdown-item" href="/loans/list/">لیست درخواست‌ها</a></li>
+                                    </ul>
+                                </li>
+
+                                {% if request.session.role == 'branch_manager' or request.session.role == 'admin' %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li class="dropdown-submenu">
+                                    <a class="dropdown-item dropdown-toggle" href="#">مدیریت شعبه</a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="/loans/pending/">تایید/رد درخواست وام</a></li>
+                                        <li><a class="dropdown-item" href="/branch/dashboard/">وضعیت کلی شعبه</a></li>
+                                    </ul>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                        {% endif %}
+
+                        {% if request.session.role == 'admin' %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="adminMenuDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                مدیریت سیستم
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminMenuDropdown">
+                                <li><a class="dropdown-item" href="/admin-panel/users/">مدیریت کاربران</a></li>
+                                <li><a class="dropdown-item" href="/admin-panel/users/create/">افزودن کاربر</a></li>
+                            </ul>
+                        </li>
+                        {% endif %}
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/auth/profile/">مشاهده پروفایل</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/auth/logout/">خروج</a>
+                        </li>
+
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/auth/login/">ورود</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% block content %}{% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".dropdown-submenu > .dropdown-toggle").forEach(function (element) {
+            element.addEventListener("click", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const submenu = this.nextElementSibling;
+                const parentMenu = this.closest(".dropdown-menu");
+
+                if (!submenu) return;
+
+                parentMenu.querySelectorAll(".dropdown-menu").forEach(function (menu) {
+                    if (menu !== submenu) {
+                        menu.classList.remove("show");
+                    }
+                });
+
+                submenu.classList.toggle("show");
+            });
+        });
+
+        document.querySelectorAll(".dropdown").forEach(function (dropdown) {
+            dropdown.addEventListener("hidden.bs.dropdown", function () {
+                this.querySelectorAll(".dropdown-menu").forEach(function (menu) {
+                    menu.classList.remove("show");
+                });
+            });
+        });
+    });
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>
