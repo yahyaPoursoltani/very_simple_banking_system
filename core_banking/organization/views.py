@@ -63,6 +63,7 @@ def bank_user_list(request):
     return render(request, 'organization/user_list.html', context)
 
 
+
 def bank_user_create(request):
     roles = get_roles()
 
@@ -74,40 +75,77 @@ def bank_user_create(request):
         fk_user_role = request.POST.get('fk_user_role', '').strip()
         is_active = 1 if request.POST.get('is_active') == '1' else 0
 
-        user_data = {
-            'username': username,
-            'first_name': first_name,
-            'last_name': last_name,
-            'national_id': national_id,
-            'fk_user_role': int(fk_user_role) if fk_user_role.isdigit() else '',
-            'is_active': is_active,
-        }
-
-        if not username or not first_name or not last_name or not national_id or not fk_user_role:
+        # Basic validation
+        if not all([username, first_name, last_name, national_id, fk_user_role]):
             messages.error(request, 'همه فیلدهای اجباری را تکمیل کنید.')
             return render(request, 'organization/user_form.html', {
                 'form_mode': 'create',
                 'roles': roles,
-                'user_data': user_data,
             })
 
-        # مقادیر پیش‌فرض برای ستون‌های اجباری که فعلاً در فرم نیستند
-        password_hash = 'default_hash'  # بعداً باید با هش واقعی جایگزین شود
-        is_headquarter = 0
-        hire_date = '2024-01-01'
-        salary = 0
-        fk_employee_branch = 1  # باید branch_id معتبر باشد
+        if not fk_user_role.isdigit():
+            messages.error(request, 'نقش انتخاب‌شده معتبر نیست.')
+            return render(request, 'organization/user_form.html', {
+                'form_mode': 'create',
+                'roles': roles,
+            })
+
+        if len(national_id) != 10:
+            messages.error(request, 'کد ملی باید ۱۰ رقم باشد.')
+            return render(request, 'organization/user_form.html', {
+                'form_mode': 'create',
+                'roles': roles,
+            })
+
+        role_id = int(fk_user_role)
 
         try:
             with transaction.atomic():
                 with connection.cursor() as cursor:
+
+                    # Check role existence
+                    cursor.execute(
+                        "SELECT 1 FROM role WHERE role_id = %s",
+                        [role_id]
+                    )
+                    if not cursor.fetchone():
+                        raise Exception("Role does not exist.")
+
+                    # Check duplicate username
+                    cursor.execute(
+                        "SELECT 1 FROM users WHERE username = %s",
+                        [username]
+                    )
+                    if cursor.fetchone():
+                        raise Exception("Username already exists.")
+
+                    # Check duplicate national_id
+                    cursor.execute(
+                        "SELECT 1 FROM employee WHERE national_id = %s",
+                        [national_id]
+                    )
+                    if cursor.fetchone():
+                        raise Exception("National ID already exists.")
+
+                    # Get a valid branch_id
+                    cursor.execute("SELECT branch_id FROM branch LIMIT 1")
+                    branch = cursor.fetchone()
+                    if not branch:
+                        raise Exception("No branch found in system.")
+
+                    fk_employee_branch = branch[0]
+
+                    # Insert into users
                     cursor.execute("""
                         INSERT INTO users (username, password_hash, is_active, fk_user_role)
                         VALUES (%s, %s, %s, %s)
-                    """, [username, password_hash, is_active, fk_user_role])
+                    """, [username, 'default_hash', is_active, role_id])
 
                     new_user_id = cursor.lastrowid
+                    if not new_user_id:
+                        raise Exception("Failed to create user.")
 
+                    # Insert into employee
                     cursor.execute("""
                         INSERT INTO employee (
                             employee_id,
@@ -119,28 +157,22 @@ def bank_user_create(request):
                             salary,
                             fk_employee_branch
                         )
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                        VALUES (%s, %s, %s, %s, %s, CURDATE(), %s, %s)
                     """, [
                         new_user_id,
                         first_name,
                         last_name,
                         national_id,
-                        is_headquarter,
-                        hire_date,
-                        salary,
-                        fk_employee_branch,
+                        0,
+                        0,
+                        fk_employee_branch
                     ])
 
-            messages.success(request, 'کاربر و کارمند جدید با موفقیت ایجاد شد.')
+            messages.success(request, 'کاربر با موفقیت ایجاد شد.')
             return redirect('organization:bank_user_list')
 
         except Exception as e:
-            messages.error(request, f'خطا در ایجاد: {e}')
-            return render(request, 'organization/user_form.html', {
-                'form_mode': 'create',
-                'roles': roles,
-                'user_data': user_data,
-            })
+            messages.error(request, f'خطا: {str(e)}')
 
     return render(request, 'organization/user_form.html', {
         'form_mode': 'create',
