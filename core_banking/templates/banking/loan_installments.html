@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}اقساط وام{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4 fw-bold">اقساط وام شماره {{ loan_id }}</h2>
+
+<table class="table table-bordered text-center">
+    <thead class="table-dark">
+        <tr>
+            <th>شماره قسط</th>
+            <th>سررسید</th>
+            <th>مبلغ</th>
+            <th>وضعیت</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for ins in installments %}
+        <tr>
+            <td>{{ ins.installment_number }}</td>
+            <td>{{ ins.due_date }}</td>
+            <td>{{ ins.amount }}</td>
+            <td>
+                {% if ins.status == 0 %}
+                    <span class="badge bg-danger">پرداخت نشده</span>
+                {% else %}
+                    <span class="badge bg-success">پرداخت شده</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+
+{% endblock %}

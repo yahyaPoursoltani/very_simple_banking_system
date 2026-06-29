@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}ثبت درخواست وام{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-4">
+
+                <h2 class="mb-4 text-center fw-bold">ثبت درخواست وام</h2>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="customer_id" class="form-label">مشتری</label>
+                        <select class="form-select" id="customer_id" name="customer_id" required>
+                            <option value="">انتخاب مشتری</option>
+                            {% for c in customers %}
+                                <option value="{{ c.customer_id }}">
+                                    {{ c.first_name }} {{ c.last_name }} - {{ c.national_id }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="product_id" class="form-label">محصول وام</label>
+                        <select class="form-select" id="product_id" name="product_id" required>
+                            <option value="">انتخاب محصول</option>
+                            {% for p in products %}
+                                <option value="{{ p.product_id }}">{{ p.product_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">مبلغ وام</label>
+                        <input type="number" id="amount" name="amount"
+                               class="form-control" required min="1">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="interest_rate" class="form-label">نرخ سود</label>
+                        <input type="number" id="interest_rate" name="interest_rate"
+                               class="form-control" required min="0">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="months" class="form-label">مدت وام (ماه)</label>
+                        <input type="number" id="months" name="months"
+                               class="form-control" required min="1">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="start_date" class="form-label">تاریخ شروع</label>
+                        <input type="date" id="start_date" name="start_date"
+                               class="form-control" required>
+                    </div>
+
+                    <button class="btn btn-primary w-100">ثبت درخواست وام</button>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

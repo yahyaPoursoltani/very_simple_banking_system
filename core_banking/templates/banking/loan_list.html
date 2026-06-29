@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}لیست درخواست‌های وام{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4 text-center fw-bold">لیست درخواست‌های وام</h2>
+
+<table class="table table-bordered table-striped text-center align-middle shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>مشتری</th>
+            <th>محصول</th>
+            <th>مبلغ</th>
+            <th>نرخ سود</th>
+            <th>مدت</th>
+            <th>شروع</th>
+            <th>وضعیت</th>
+            {% if request.session.role == "branch_manager" or request.session.role == "admin" %}
+            <th>عملیات</th>
+            {% endif %}
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for loan in loans %}
+        <tr>
+            <td>{{ loan.loan_id }}</td>
+            <td>{{ loan.customer_name }}<br><small>{{ loan.national_id }}</small></td>
+            <td>{{ loan.product_name }}</td>
+            <td>{{ loan.loan_amount }}</td>
+            <td>{{ loan.interest_rate }}%</td>
+            <td>{{ loan.duration_months }} ماه</td>
+            <td>{{ loan.start_date }}</td>
+
+            <td>
+                {% if loan.status == 0 %}
+                    <span class="badge bg-warning">در انتظار تایید</span>
+                {% elif loan.status == 1 %}
+                    <span class="badge bg-success">تایید شده</span>
+                {% elif loan.status == 2 %}
+                    <span class="badge bg-danger">رد شده</span>
+                {% endif %}
+            </td>
+
+            {% if request.session.role == "branch_manager" or request.session.role == "admin" %}
+            <td>
+                {% if loan.status == 0 %}
+                <button class="btn btn-primary btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#loanModal{{ loan.loan_id }}">
+                    بررسی
+                </button>
+                {% else %}
+                    <span class="text-muted">بررسی شده</span>
+                {% endif %}
+            </td>
+            {% endif %}
+        </tr>
+
+        {% if request.session.role == "branch_manager" or request.session.role == "admin" %}
+        <!-- Modal -->
+        <div class="modal fade" id="loanModal{{ loan.loan_id }}" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">بررسی درخواست وام</h5>
+                        <button class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p><strong>مشتری:</strong> {{ loan.customer_name }} ({{ loan.national_id }})</p>
+                        <p><strong>محصول:</strong> {{ loan.product_name }}</p>
+                        <p><strong>مبلغ وام:</strong> {{ loan.loan_amount }}</p>
+                        <p><strong>نرخ سود:</strong> {{ loan.interest_rate }}%</p>
+                        <p><strong>مدت:</strong> {{ loan.duration_months }} ماه</p>
+                        <p><strong>تاریخ شروع:</strong> {{ loan.start_date }}</p>
+                    </div>
+
+                    <div class="modal-footer">
+                        <a href="{% url 'loan_approve' loan.loan_id %}"
+                           class="btn btn-success">تایید وام</a>
+
+                        <a href="{% url 'loan_reject' loan.loan_id %}"
+                           class="btn btn-danger">رد وام</a>
+
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
